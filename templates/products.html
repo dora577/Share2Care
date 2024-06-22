@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<header>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</header>
+<body>
+    <main>
+        <div class="container">
+
+
+            <div class="row">
+
+                <div class="col-sm-3 col-md-3 col-lg-3 col-xs-12">
+                    <h4 class="badge-pill badge-light mt-3 mb-3 p-2 text-center">Instant Order</h4>
+                    {% for i in range(0,(recom_data|length) | int) %}
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6 col-lg-12 col-xs-6">
+                            <div class="shadow-sm card mb-3 product">
+                                <img class="product-img" src="{{recom_data[i]['imageURL']}}" alt="prd1" onmouseover="animateImg(this)"
+                                onmouseout="normalImg(this)"/>
+                                <div class="card-body">
+                                    <p hidden class="product-id">{{recom_data[i]['productId']}}</p>
+                                    <p hidden class="portion">1</p>
+                                    <h5 class="card-title text-info bold product-name">{{recom_data[i]['name']}}</h5>
+                                    <p class="card-text text-success product-price">{{"%.2f"|format(recom_data[i]['price']|float/recom_data[i]['quantity'])}} USD/unit</p>
+                                    <p class="card-text text-danger product-price"> Only {{ recom_data[i]['rest'] | int }} to go </p>
+                                    <form class="add-to-cart-form" action="/"  method="POST" id="add-to-cart-form-{{recom_data[i]['productId']}}"> 
+                                        <input type="hidden" name="product_id" id="val-{{recom_data[i]['productId']}}" value="{{recom_data[i]['productId']}}">
+                                        {%if recom_data[i]['productId']|string in cart_prods%}
+                                        <button class="btn badge badge-pill badge-secondary mt-2 float-right" type="submit" name='action' data-action="addtocart">Remove from cart</button> 
+                                        {%else%}
+                                        <button class="btn badge badge-pill badge-secondary mt-2 float-right" type="submit" name='action' data-action="addtocart">Add to cart</button> 
+                                        {%endif%}
+                                    </form>
+                                    <script src="https://code.jquery.com/jquery-3.5.1.js"
+                                            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+                                            crossorigin="anonymous"></script>
+                                    
+                                    <script type="text/javascript">
+                                        
+                                        $(document).on('submit',"#add-to-cart-form-{{recom_data[i]['productId']}}",function(e)
+                                                    {
+                                        e.preventDefault();
+                                        $.ajax({
+                                            type:'POST',
+                                            url:'/',
+                                            data:{
+                                            id:$("#val-{{recom_data[i]['productId']}}").val(),
+                                            action: $(this).find(':input[type=submit]').text()
+                                            }
+                                        })
+
+                                        if ($(this).find(':input[type=submit]').text() == "Add to cart"){
+                                            $(this).find(':input[type=submit]').text('Remove from cart');
+                                        }
+                                        else{
+                                            $(this).find(':input[type=submit]').text('Add to cart');
+                                        }
+                                        });
+
+                                    </script>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>   
+
+
+
+
+                <div class="col-sm-12 col-md-12 col-lg-9 col-xs-12"> 
+                    <form class="badge-pill badge-light mt-3 mb-3 p-2 text-center" method="post" action="/" 
+                    style="margin:auto;max-width:600px">
+                        <input type="text" placeholder="Type..." name="keyword">
+                        <button class="button-3" role = "button">search</button>
+                   </form>  
+
+                    {% for i in range(0,(data|length) | int, 3) %}
+                    <div class="row">
+                        {% for j in range(3) %}
+                            {%if (i+j)<data|length%}
+                            <div class="col-sm-6 col-md-6 col-lg-4 col-xs-6">
+                                <div class="shadow-sm card mb-3 product">
+                                <img class="product-img" src="{{data[i+j]['imageURL']}}" alt="prd1" onmouseover="animateImg(this)"
+                                onmouseout="normalImg(this)"/>
+                                <div class="card-body">
+                                    <p hidden class="product-id">{{data[i+j]['productId']}}</p>
+                                    <p hidden class="portion">1</p>
+                                    <h5 class="card-title text-info bold product-name">{{data[i+j]['name']}}</h5>
+                                    <p class="card-text text-success product-price-ttl">{{data[i+j]['price']}} USD</p>
+                                    <p class="card-text text-success product-price">{{"%.2f"|format(data[i+j]['price']|float/data[i+j]['quantity'])}} USD/unit</p>
+                                    <form class="add-to-cart-form" action="/"  method="POST" id="add-to-cart-form-{{data[i+j]['productId']}}"> 
+                                        <input type="hidden" name="product_id" id="val-{{data[i+j]['productId']}}" value="{{data[i+j]['productId']}}">
+                                        {%if data[i+j]['productId']|string in cart_prods%}
+                                        <button class="btn badge badge-pill badge-secondary mt-2 float-right" type="submit" name='action' data-action="addtocart">Remove from cart</button> 
+                                        {%else%}
+                                        <button class="btn badge badge-pill badge-secondary mt-2 float-right" type="submit" name='action' data-action="addtocart">Add to cart</button> 
+                                        {%endif%}
+                                    </form>
+                                    <script src="https://code.jquery.com/jquery-3.5.1.js"
+                                            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+                                            crossorigin="anonymous"></script>
+                                    
+                                    <script type="text/javascript">
+                                        
+                                        $(document).on('submit',"#add-to-cart-form-{{data[i+j]['productId']}}",function(e)
+                                                    {
+                                        e.preventDefault();
+                                        $.ajax({
+                                            type:'POST',
+                                            url:'/',
+                                            data:{
+                                            id:$("#val-{{data[i+j]['productId']}}").val(),
+                                            action: $(this).find(':input[type=submit]').text()
+                                            }
+                                        })
+
+                                        if ($(this).find(':input[type=submit]').text() == "Add to cart"){
+                                            $(this).find(':input[type=submit]').text('Remove from cart');
+                                        }
+                                        else{
+                                            $(this).find(':input[type=submit]').text('Add to cart');
+                                        }
+                                        });
+
+                                    </script>
+                                </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>   
+                    {% endfor %}
+                </div>
+                <div class=pagination>
+                    {% for page in pagination.iter_pages() %}
+                    {% if page %}
+                        {% if page != pagination.page %}
+                        <a href="{{ url_for('main.products', page=page, keyword = keyword) }}">{{ page }}</a>
+                        {% else %}
+                        <a class="active" href="{{ url_for('main.products', page=page, keyword = keyword) }}">{{page}}</a>
+                        {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        </main>
+</body>
+{% endblock %}
